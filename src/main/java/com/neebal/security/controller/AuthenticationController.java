@@ -28,7 +28,7 @@ public class AuthenticationController {
 	@Autowired
 	private JwtUtil jwtTokenUtil;
 	
-	@PostMapping("/authenticate")
+	@PostMapping("/user/signin")
 	public ResponseEntity<?> createAuthencationTiken(@RequestBody AuthenticationRequest authenticationRequest) throws Exception{
 		try {
 			authenticationManager.authenticate(new UsernamePasswordAuthenticationToken(authenticationRequest.getUserName(),authenticationRequest.getPassword()));

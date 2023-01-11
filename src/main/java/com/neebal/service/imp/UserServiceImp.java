@@ -6,6 +6,7 @@ import java.util.List;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
+import com.neebal.dto.UserDto;
 import com.neebal.exception.ResourceNotFoundException;
 import com.neebal.model.User;
 import com.neebal.repositry.UserDao;
@@ -17,20 +18,23 @@ public class UserServiceImp implements UserService {
 	private UserDao userDao;
 
 	@Override
-	public User createUser(User u) {
+	public User createUser(UserDto u) {
+		return userDao.save(new User(u));
+	}
+
+	@Override
+	public User updateUser(UserDto user,String email) {
+//		User userGet=userDao.findById(userId).orElseThrow(()-> new ResourceNotFoundException("user", "Id", userId));
+		User u=new User(user);
+		User uDb=userDao.findByEmail(email);
+		u.setUserId(uDb.getUserId());
+		u.setEmail(email);
 		return userDao.save(u);
 	}
 
 	@Override
-	public User updateUser(User user, Integer userId) {
-		User userGet=userDao.findById(userId).orElseThrow(()-> new ResourceNotFoundException("user", "Id", userId));
-		user.setUserId(userId);
-		return userDao.save(user);
-	}
-
-	@Override
-	public User getUserById(Integer userId) {
-		User user=userDao.findById(userId).orElseThrow(()-> new ResourceNotFoundException("user", "Id", userId));
+	public User getUser(String email) {
+		User user=userDao.findByEmail(email);
 		return user;
 	}
 
@@ -41,8 +45,8 @@ public class UserServiceImp implements UserService {
 	}
 
 	@Override
-	public User deleteUser(Integer userId) {
-		User userGet=userDao.findById(userId).orElseThrow(()-> new ResourceNotFoundException("user", "Id", userId));
+	public User deleteUser(String email) {
+		User userGet=userDao.findByEmail(email);
 		userDao.delete(userGet);
 		return userGet;
 	}

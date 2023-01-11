@@ -17,6 +17,7 @@ public class JwtUtil {
 	private String SECRET_KEY="secret";
 	
 	public String extractUsername(String token) {
+//		System.out.println(extractClaim(token,Claims::getSubject));
 		return extractClaim(token,Claims::getSubject);
 	}
 	
@@ -32,7 +33,6 @@ public class JwtUtil {
 		final String username=extractUsername(token);
 		return (username.equals(userDetails.getUsername()) && !isTokenExpired(token));
 	}
-	
 	
 	private Claims extractAllClaims(String token) {
 		return Jwts.parser().setSigningKey(SECRET_KEY).parseClaimsJws(token).getBody();

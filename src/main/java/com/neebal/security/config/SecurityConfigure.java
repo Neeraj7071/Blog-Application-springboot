@@ -1,12 +1,9 @@
 package com.neebal.security.config;
 
-import javax.servlet.Filter;
-
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.security.authentication.AuthenticationManager;
-import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
 import org.springframework.security.config.annotation.authentication.builders.AuthenticationManagerBuilder;
 import org.springframework.security.config.annotation.web.builders.HttpSecurity;
 import org.springframework.security.config.annotation.web.configuration.EnableWebSecurity;
@@ -19,7 +16,7 @@ import org.springframework.security.web.authentication.UsernamePasswordAuthentic
 import com.neebal.security.filter.JwtRequestFilter;
 import com.neebal.security.service.MyUserDetailsService;
 
-//@Configuration
+@Configuration	
 @EnableWebSecurity
 public class SecurityConfigure extends WebSecurityConfigurerAdapter{
 	@Autowired
@@ -48,7 +45,8 @@ public class SecurityConfigure extends WebSecurityConfigurerAdapter{
 	@Override
 	protected void configure(HttpSecurity http) throws Exception {
 		http.csrf().disable()
-			.authorizeHttpRequests().antMatchers("/authenticate").permitAll()
+			.authorizeHttpRequests().antMatchers("/user/signin").permitAll()
+			.antMatchers("/user/signup").permitAll()
 			.anyRequest().authenticated()
 			.and().sessionManagement()
 			.sessionCreationPolicy(SessionCreationPolicy.STATELESS);
