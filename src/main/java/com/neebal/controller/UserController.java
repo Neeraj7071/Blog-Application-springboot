@@ -31,7 +31,6 @@ public class UserController {
 	@Autowired
     private IAuthenticationFacade authenticationFacade;
 
-    @GetMapping("/get")
     public String currentUserNameSimple() {
         Authentication authentication = authenticationFacade.getAuthentication();
         String a=authentication.getName();

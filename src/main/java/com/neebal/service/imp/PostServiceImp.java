@@ -35,9 +35,9 @@ public class PostServiceImp implements PostService{
 	
 
 	@Override
-	public Post createPost(PostDto postDto, Integer categoryId, Integer userId) {
+	public Post createPost(PostDto postDto, Integer categoryId, String email) {
 		Post post=new Post(postDto);
-		User user=userImp.getUserById(userId);
+		User user=userImp.getUser(email);
 		Category category=categoryImp.getById(categoryId);
 		post.setUser(user);
 		post.setCategory(category);
@@ -45,17 +45,21 @@ public class PostServiceImp implements PostService{
 	}
 
 	@Override
-	public Post updatePost(PostDto postDto, Integer postId) {
+	public Post updatePost(PostDto postDto, Integer postId,String email) {
 		Post post=new Post(postDto);
 		Post postget=postDao.findById(postId).orElseThrow(()->new ResourceNotFoundException("Post", "Id", postId));
+		if(!post.getUser().equals(userImp.getUser(email)))
+			throw new ResourceNotFoundException("Post", "Id", postId);
 		post.setPostId(postId);
 		return postDao.save(post);
 	}
 
 	@Override
-	public Post deletePost(Integer postId) {
+	public Post deletePost(Integer postId,String email) {
 		Post postget=postDao.findById(postId).orElseThrow(()->new ResourceNotFoundException("Post", "Id", postId));
-		postDao.delete(postget);
+		
+		if(!postget.getUser().equals(userImp.getUser(email)))
+			throw new ResourceNotFoundException("Post", "Id", postId);postDao.delete(postget);
 		return postget;
 	}
 
@@ -76,8 +80,8 @@ public class PostServiceImp implements PostService{
 	}
 
 	@Override
-	public List<Post> getPostByUser(Integer userId) {
-		User user=userImp.getUserById(userId);
+	public List<Post> getPostByUser(String email){
+		User user=userImp.getUser(email);
 		List<Post> posts=postDao.findAllByUser(user);
 		return posts;
 	}

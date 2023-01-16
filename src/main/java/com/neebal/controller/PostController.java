@@ -11,6 +11,7 @@ import org.springframework.beans.factory.annotation.Value;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
+import org.springframework.security.core.Authentication;
 import org.springframework.util.StreamUtils;
 import org.springframework.web.bind.annotation.DeleteMapping;
 import org.springframework.web.bind.annotation.GetMapping;
@@ -26,6 +27,7 @@ import org.springframework.web.multipart.MultipartFile;
 import com.neebal.dto.PostDto;
 import com.neebal.dto.ResponseDto;
 import com.neebal.model.Post;
+import com.neebal.security.filter.IAuthenticationFacade;
 import com.neebal.service.imp.FileServiceImp;
 import com.neebal.service.imp.PostServiceImp;
 
@@ -39,27 +41,37 @@ public class PostController {
 	@Autowired
 	private FileServiceImp fileImp;
 	
+	@Autowired
+    private IAuthenticationFacade authenticationFacade;
+
+    public String currentUserNameSimple() {
+        Authentication authentication = authenticationFacade.getAuthentication();
+        String a=authentication.getName();
+//        System.out.println(a);
+        return a;
+    }
+	
 	@Value("${project.image}")
 	private String path;
-	@PostMapping("/user/{userId}/category/{categoryId}")
-	public ResponseEntity<Post> createPost(@RequestBody PostDto postDto, @PathVariable("userId") Integer userId,@PathVariable("categoryId") Integer categoryId) {
-		Post postGet = postImp.createPost(postDto, categoryId, userId);
+	@PostMapping("/category/{categoryId}")
+	public ResponseEntity<Post> createPost(@RequestBody PostDto postDto,@PathVariable("categoryId") Integer categoryId) {
+		Post postGet = postImp.createPost(postDto, categoryId, currentUserNameSimple());
 		return new ResponseEntity<Post>(postGet, HttpStatus.CREATED);
 	}
 
 	@PutMapping("/update/{postId}")
 	public ResponseEntity<Post> updatePostById(@RequestBody PostDto postDto, @PathVariable("postId") Integer postId) {
-		Post postGet = postImp.updatePost(postDto, postId);
+		Post postGet = postImp.updatePost(postDto, postId,currentUserNameSimple());
 		return new ResponseEntity<Post>(postGet, HttpStatus.ACCEPTED);
 	}
 
 	@DeleteMapping("/delete/{postId}")
 	public ResponseEntity<Post> deletePostById(@PathVariable("postId") Integer postId) {
-		Post postGet = postImp.deletePost(postId);
+		Post postGet = postImp.deletePost(postId,currentUserNameSimple());
 		return new ResponseEntity<Post>(postGet, HttpStatus.ACCEPTED);
 	}
 
-	@GetMapping("/posts")
+	@GetMapping("/get/")
 	public ResponseEntity<ResponseDto> findAll(@RequestParam(value="pageNumber",defaultValue="0",required=false)Integer pageNumber,
 			@RequestParam(value="pageSize",defaultValue="5",required=false)Integer pageSize,
 			@RequestParam(value="sortBy",defaultValue="postId",required=false)String sortBy,
@@ -68,25 +80,25 @@ public class PostController {
 		return new ResponseEntity<ResponseDto>(resDto, HttpStatus.ACCEPTED);
 	}
 
-	@GetMapping("/getByID/{postId}")
+	@GetMapping("/get/byID/{postId}")
 	public ResponseEntity<Post> getPostById(@PathVariable("postId") Integer postId) {
 		Post post = postImp.getPostById(postId);
 		return new ResponseEntity<Post>(post, HttpStatus.ACCEPTED);
 	}
 
-	@GetMapping("/getByCategoryId/{categoryId}")
+	@GetMapping("/get/byCategoryId/{categoryId}")
 	public ResponseEntity<List<Post>> getByCategoryId(@PathVariable("categoryId") Integer categoryId) {
 		List<Post> posts = postImp.getPostByCategory(categoryId);
 		return new ResponseEntity<List<Post>>(posts, HttpStatus.ACCEPTED);
 	}
 
-	@GetMapping("/getByuserId/{userID}")
-	public ResponseEntity<List<Post>> getByUserId(@PathVariable("userId") Integer userId) {
-		List<Post> posts = postImp.getPostByUser(userId);
+	@GetMapping("/get/byuser")
+	public ResponseEntity<List<Post>> getByUserId() {
+		List<Post> posts = postImp.getPostByUser(currentUserNameSimple());
 		return new ResponseEntity<List<Post>>(posts, HttpStatus.ACCEPTED);
 	}
 
-	@GetMapping("/getByKeyWord/{keyWord}")
+	@GetMapping("/get/byKeyWord/{keyWord}")
 	public ResponseEntity<List<Post>> getByKeyWord(@PathVariable("keyWord") String keyWord) {
 		List<Post> posts = postImp.searchPostS(keyWord);
 		return new ResponseEntity<List<Post>>(posts, HttpStatus.ACCEPTED);
@@ -97,7 +109,7 @@ public class PostController {
 		String fileName=fileImp.uploadImage(path, image);
 		Post post=postImp.getPostById(postId);
 		post.setImage(fileName);
-		Post postUpdate=postImp.updatePost(new PostDto(post), postId);
+		Post postUpdate=postImp.updatePost(new PostDto(post), postId,currentUserNameSimple());
 		return new ResponseEntity<Post>(postUpdate, HttpStatus.ACCEPTED);
 		
 	}
