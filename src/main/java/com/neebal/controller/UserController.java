@@ -3,6 +3,7 @@ package com.neebal.controller;
 import java.util.List;
 
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.core.Authentication;
@@ -28,10 +29,12 @@ public class UserController {
 	@Autowired
 	private UserServiceImp userService;
 	
+	@Value("${secret.key}")
+	private String SECRET_KEY;
+	
 	@Autowired
     private IAuthenticationFacade authenticationFacade;
 
-    @GetMapping("/get")
     public String currentUserNameSimple() {
         Authentication authentication = authenticationFacade.getAuthentication();
         String a=authentication.getName();
@@ -42,6 +45,7 @@ public class UserController {
     
 	@PostMapping("/signup")
 	public ResponseEntity<User> createUser(@RequestBody UserDto user){
+		System.out.println(SECRET_KEY);
 		User u=userService.createUser(user);
 		return new ResponseEntity<User>(u,HttpStatus.CREATED);
 	}

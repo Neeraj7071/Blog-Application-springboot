@@ -4,6 +4,7 @@ package com.neebal.service.imp;
 import java.util.List;
 
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.security.core.userdetails.UsernameNotFoundException;
 import org.springframework.stereotype.Service;
 
 import com.neebal.dto.UserDto;
@@ -19,6 +20,8 @@ public class UserServiceImp implements UserService {
 
 	@Override
 	public User createUser(UserDto u) {
+		if(userDao.findByEmail(u.getEmail())!=null)
+			throw new UsernameNotFoundException("User already available");
 		return userDao.save(new User(u));
 	}
 

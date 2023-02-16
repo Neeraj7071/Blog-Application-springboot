@@ -8,13 +8,13 @@ import com.neebal.model.Post;
 
 public interface PostService {
 	// create Post
-    Post createPost(PostDto postDto,Integer categoryId , Integer userId);
+    Post createPost(PostDto postDto,Integer categoryId ,String email);
     
     // update Post
-    Post updatePost(PostDto postDto , Integer postId);
+    Post updatePost(PostDto postDto , Integer postId,String email);
     
     // delete post
-    Post deletePost(Integer postId);
+    Post deletePost(Integer postId,String email);
     
     // find all post
     ResponseDto getAllPost(Integer pageNumber,Integer pageSize,String sortBy,String sortDir);
@@ -26,7 +26,7 @@ public interface PostService {
     List<Post> getPostByCategory(Integer categoryId);
     
     // find by user
-    List<Post> getPostByUser(Integer userId);
+    List<Post> getPostByUser(String email);
     
     // search by post
     List<Post> searchPostS(String keyWord);

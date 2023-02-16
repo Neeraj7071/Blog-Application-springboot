@@ -23,6 +23,17 @@ public class SecurityConfigure extends WebSecurityConfigurerAdapter{
 	private MyUserDetailsService myUserDetailService;
 	@Autowired
 	private JwtRequestFilter jwtRequestFilter;
+	
+	public static final String[] PUBLIC_API= {
+			"/user/signin",
+			"/user/signup",
+			"/post/get/**",
+//			"/v2/api-docs/**",
+//			"/v3/api-docs/**",
+//			"/swagger-resources/**",
+//			"/swagger-ui/**",
+//			"/webjars/**"
+			};
 
 	@Override
 	protected void configure(AuthenticationManagerBuilder auth) throws Exception {
@@ -45,8 +56,7 @@ public class SecurityConfigure extends WebSecurityConfigurerAdapter{
 	@Override
 	protected void configure(HttpSecurity http) throws Exception {
 		http.csrf().disable()
-			.authorizeHttpRequests().antMatchers("/user/signin").permitAll()
-			.antMatchers("/user/signup").permitAll()
+			.authorizeHttpRequests().antMatchers(PUBLIC_API).permitAll()
 			.anyRequest().authenticated()
 			.and().sessionManagement()
 			.sessionCreationPolicy(SessionCreationPolicy.STATELESS);
